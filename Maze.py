@@ -6,10 +6,11 @@ class Maze:
             "begin"  : case entrée du labyrinthe
             "end"    : case fin du labyrinthe
             "tresor" : case tresor à prendre
-            "murh"   : liste murs horizontales
-            "murv"   : liste murs verticaux
+            "mursH"   : liste murs horizontales
+            "mursV"   : liste murs verticaux
         '''
         visited = set(); l = [begin]
+
         while True:
             if len(l) == 0: break
             i = l.pop()
@@ -46,7 +47,7 @@ class Maze:
 
         return l
     
-    def Q_learning(nb_itération = 1000000, gamma = 0.99, lr=0.1, explo = 0.2, verbose= False):
+    def QlearningConstruction(nb_itération = 1000000, gamma = 0.99, check_periode = 1000, lr=0.1, explo = 0.2, verbose= False):
         '''
         Génère l'emplacement du trésor, début, fin aléatoirement.
         Créer les murs du l'abyrinthe avec l'algorithme Q value
@@ -58,8 +59,11 @@ class Maze:
             #Choisit une case de départ, d'arrivé, de trésor aléatoirement
             tmp = list(range(4))
             random.shuffle(tmp)
-            #BET = [tmp.pop() for _ in range(3)]
-            BET = [1, 8, 3]
+            BET = [tmp.pop() for _ in range(3)]
+            """
+            On met BET sous forme d'ensemble pour détruire la notion "d'ordre" des keypoints, 
+            un labyrinthe étant toujours résolvable par interversion de ces "keypoints"
+            """
             bet = str(set(BET))
 
             #On construit le labyrinthe
@@ -95,11 +99,44 @@ class Maze:
             else :
                 Qvalue[bet] = -10
 
-            if verbose and (i+1)% 1000 == 0:
-                print("Itération {}, labyrinthe correct : {}%, taille Qtable {}".format(i, nbr_laby_ok/1000, len(Qvalue)))
+            if verbose and (i+1)% check_periode == 0:
+                print("Itération {}, labyrinthe correct : {}%, taille Qtable {}".format(i, round((nbr_laby_ok/(check_periode-1))*100,2), len(Qvalue)))
                 nbr_laby_ok = 0
 
         return Qvalue
 
+    def RandomConstruction(nb_itération = 1000000, verbose= False, check_période = 1000):
+        '''
+        Génère l'emplacement du trésor, début, fin aléatoirement.
+        Créer les murs aléatoirement
+        '''
+        Qvalue = dict()
+        nbr_laby_ok = 0
 
+        for i in range(nb_itération):
+            #Choisit une case de départ, d'arrivé, de trésor aléatoirement
+            tmp = list(range(4))
+            random.shuffle(tmp)
+            BET = [tmp.pop() for _ in range(3)]
+            bet = str(set(BET))
 
+            #On construit le labyrinthe
+            for j in range(3*4*2):
+                bet += random.choice(['0', '1'])
+            
+            #On a construit le labyrinthe, on cherche à savoir s'il est résolvable
+            murs = list(map(lambda a : int(a),bet[-24:]))
+            mursH = murs[-12:]
+            mursV = murs[-24:-12]
+            
+            if (Maze.resolvable(BET[0], BET[1], BET[2],mursV, mursH)):
+                Qvalue[bet] = 10
+                nbr_laby_ok += 1
+            else :
+                Qvalue[bet] = -10
+
+            if verbose and (i+1)% check_période == 0:
+                print("Itération {}, labyrinthe correct : {}%".format(i, round((nbr_laby_ok/(check_période-1))*100,2)))
+                nbr_laby_ok = 0
+
+        return Qvalue
