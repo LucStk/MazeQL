@@ -140,3 +140,43 @@ class Maze:
                 nbr_laby_ok = 0
 
         return Qvalue
+
+    def Qvalue_exploitation(Qvalue):
+        '''
+        Génère un labyrinthe résolvable depuis une Q_value table.
+        Retourne un quituplet: Debut, fin, trésor, murs verticaux, murs horizontaux
+        '''
+
+        #Choisit une case de départ, d'arrivé, de trésor aléatoirement
+        tmp = list(range(4))
+        random.shuffle(tmp)
+        BET = [tmp.pop() for _ in range(3)]
+        """
+        On met BET sous forme d'ensemble pour détruire la notion "d'ordre" des keypoints, 
+        un labyrinthe étant toujours résolvable par interversion de ces "keypoints"
+        """
+        bet = str(set(BET))
+        while True:
+        #On construit le labyrinthe
+            for _ in range(3*4*2):
+                q0 = Qvalue.get(bet+'0')
+                q1 = Qvalue.get(bet+'1')
+
+                if q0 is None: 
+                    q0 = random.random()
+                    Qvalue[bet+'0'] = q0
+                if q1 is None: 
+                    q1 = random.random()
+                    Qvalue[bet+'1'] = q1
+
+                bet += '01'[q1 == max(q0, q1)]
+            
+            murs = list(map(lambda a : int(a),bet[-24:]))
+            mursH = murs[-12:]
+            mursV = murs[-24:-12]
+            #Si le labyrinthe produit n'est pas résolvable, on re-crée un labyrinthe
+            if (Maze.resolvable(BET[0], BET[1], BET[2],mursV, mursH)):
+                return BET[0], BET[1], BET[2], mursV, mursH
+
+            
+            
