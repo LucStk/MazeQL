@@ -75,4 +75,4 @@ On veut implémenter une mesure de difficulté d'un labyrinthe.
 Une possibilité est de considérer le nombre de cases à parcourir entre le début du labyrinthe, le trésor et la sortie du labyrinthe. Cependant, si le labyrinthe est linéaire, il peut être grand et pour autant très simple à effectuer.
 Une autre mesure possible est donc de calculer le nombre d'embranchements possible dans le labyrinthe. Le nombre de choix à prendre.
 Cependant, le nombre d'embranchements peut être globalement élevé dans le labyrinthe et les keypoints proches les uns devant les autres rendant la résolution du labyrinthe facile.
-On peut donc faire une somme pondérée de ces deux valeurs. On peut également compter le nombre d'embranchements entre l'entrée-trésor et trésor-sortie ainsi que le nombre d'embranchements filles des premières. De cette manière, on obtient une mesure de la complexité du labyrinthe.
+On peut donc faire une somme pondérée de ces deux valeurs. On peut également compter le nombre d'embranchements entre l'entrée-trésor et trésor-sortie ainsi que le nombre d'embranchements filles des premières.
