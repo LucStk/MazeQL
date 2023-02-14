@@ -1,3 +1,10 @@
+# Architecture
+L'ensemble des fonctions utiles est disponible dans le fichier Maze.py.
+Les tests associés aux fonctions de Maze.py se trouve dans test.py
+main_aléatoire.py est un executable
+main_Q.py est un executable
+
+
 # MazeQL
 On utilise l'algorithme d'apprentissage par renforcement Q-Learning pour générer un petit labyrinthe contenant, un trésor, un début, une fin.
 
@@ -8,7 +15,7 @@ En premier lieu, les coordonnées des cases du labyrinthe sont mises en dimensio
 Le labyrinthe est représenté par une liste de 27 chiffres.
 Les 3 premiers correspondent aux coordonnées de la case de départ, la case de fin et la case trésor. Cette séquence est suivie de 12 chiffres binaires : 1 indique la présence d'un mur vertical, 0 indique l'absence de mur vertical.
 Cette séquence est suivie d'une autre de 12 chiffres aussi, indiquant la présence ou l'absence d'un mur horizontale. (le numéro d'un mur est établi par sa position dans le labyrinthe de gauche à droite et de haut en bas.)
-Avec cette modélisation, on peut calculer exactement le nombre de labyrinthes possible : 16*15*14 * 2²⁴ = 56.3 milliards de combinaisons. Cependant, il est bon de noter que la plupart serait vraisemblablement non resolvable.
+Avec cette modélisation, on peut calculer exactement le nombre de labyrinthes possible : 16 * 15 * 14 * 2²⁴ = 56.3 milliards de combinaisons. Cependant, il est bon de noter que la plupart serait vraisemblablement non resolvable.
 
 
 
