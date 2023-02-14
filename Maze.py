@@ -1,8 +1,12 @@
 import random
 
 class Maze:
+    def __init__(self):
+        Q_value = None
+
     def resolvable(begin, end, tresor, mursV, mursH, verbose=False):
         '''
+            Renvoie un boolean indiquant si le labyrinthe est résolvable ou non
             "begin"  : case entrée du labyrinthe
             "end"    : case fin du labyrinthe
             "tresor" : case tresor à prendre
@@ -47,7 +51,7 @@ class Maze:
 
         return l
     
-    def QlearningConstruction(nb_itération = 1000000, gamma = 0.99, check_periode = 1000, lr=0.1, explo = 0.2, verbose= False):
+    def Qlearning(self, nb_itération = 1000000, gamma = 0.99, check_periode = 1000, lr=0.1, explo = 0.2, verbose= False):
         '''
         Génère l'emplacement du trésor, début, fin aléatoirement.
         Créer les murs du l'abyrinthe avec l'algorithme Q value
@@ -103,49 +107,55 @@ class Maze:
                 print("Itération {}, labyrinthe correct : {}%, taille Qtable {}".format(i, round((nbr_laby_ok/(check_periode-1))*100,2), len(Qvalue)))
                 nbr_laby_ok = 0
 
-        return Qvalue
+        self.Q_value = Qvalue
 
-    def RandomConstruction(nb_itération = 1000000, verbose= False, check_période = 1000):
+    def Random_generation():
         '''
         Génère l'emplacement du trésor, début, fin aléatoirement.
         Créer les murs aléatoirement
         '''
-        Qvalue = dict()
+        #Choisit une case de départ, d'arrivé, de trésor aléatoirement
+        tmp = list(range(4))
+        random.shuffle(tmp)
+        BET = [tmp.pop() for _ in range(3)]
+        bet = str(set(BET))
+
+        #On construit le labyrinthe
+        for _ in range(3*4*2):
+            bet += random.choice(['0', '1'])
+            
+        #On a construit le labyrinthe, on cherche à savoir s'il est résolvable
+        murs = list(map(lambda a : int(a),bet[-24:]))
+        mursH = murs[-12:]
+        mursV = murs[-24:-12]
+        
+        return BET[0], BET[1], BET[2],mursV, mursH
+
+    def testRandomConstruction(nb_itération = 1000000, verbose= False, check_période = 1000):
+        """
+        test le nombre de labyrinthe correct donné par la fonction RandomConstruction
+        """
         nbr_laby_ok = 0
 
         for i in range(nb_itération):
-            #Choisit une case de départ, d'arrivé, de trésor aléatoirement
-            tmp = list(range(4))
-            random.shuffle(tmp)
-            BET = [tmp.pop() for _ in range(3)]
-            bet = str(set(BET))
-
-            #On construit le labyrinthe
-            for j in range(3*4*2):
-                bet += random.choice(['0', '1'])
+            b, e, t, mursV, mursH = Maze.Random_generation()
             
-            #On a construit le labyrinthe, on cherche à savoir s'il est résolvable
-            murs = list(map(lambda a : int(a),bet[-24:]))
-            mursH = murs[-12:]
-            mursV = murs[-24:-12]
-            
-            if (Maze.resolvable(BET[0], BET[1], BET[2],mursV, mursH)):
-                Qvalue[bet] = 10
+            if (Maze.resolvable(b, e, t, mursV, mursH)):
                 nbr_laby_ok += 1
-            else :
-                Qvalue[bet] = -10
 
             if verbose and (i+1)% check_période == 0:
                 print("Itération {}, labyrinthe correct : {}%".format(i, round((nbr_laby_ok/(check_période-1))*100,2)))
                 nbr_laby_ok = 0
 
-        return Qvalue
-
-    def Qvalue_exploitation(Qvalue):
+    def Q_generation(self):
         '''
         Génère un labyrinthe résolvable depuis une Q_value table.
         Retourne un quituplet: Debut, fin, trésor, murs verticaux, murs horizontaux
         '''
+        if self.Q_value is None:
+            raise Exception("Modèle not trained")
+        else:
+            Qvalue = self.Q_value
 
         #Choisit une case de départ, d'arrivé, de trésor aléatoirement
         tmp = list(range(4))
